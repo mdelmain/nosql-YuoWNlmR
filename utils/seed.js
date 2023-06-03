@@ -1,5 +1,5 @@
 const connection = require("../config/connection");
-const { User } = require("../models");
+const { User, Thought } = require("../models");
 
 connection.on("error", (err) => err);
 
@@ -9,12 +9,31 @@ connection.once("open", async () => {
   // Drop existing users
   await User.deleteMany({});
 
+  // Drop existing users
+  await Thought.deleteMany({});
+
+  const thoughts = [];
+
+  thoughts.push({
+    thoughtText: "this is a test thought",
+    username: "bob",
+  });
+
+  // Add thoughts to the collection and await the results
+  const thoughtsResult = await Thought.collection.insertMany(thoughts);
+
+  const thoughtIds = [];
+  for (const index in thoughtsResult.insertedIds) {
+    thoughtIds.push(thoughtsResult.insertedIds[index]);
+  }
+
   // Create empty array to hold the users
   const users = [];
 
   users.push({
     username: "bob",
     email: "bob@mail.com",
+    thoughts: thoughtIds,
   });
 
   // Add users to the collection and await the results
@@ -22,6 +41,7 @@ connection.once("open", async () => {
 
   // Log out the seed data to indicate what should appear in the database
   console.table(users);
+  console.table(thoughts);
   console.info("Seeding complete! 🌱");
   process.exit(0);
 });
