@@ -3,8 +3,8 @@ const router = require('express').Router();
 // GET all thoughts
 router.get('/', async (req, res) => {
     try {
-      const users = [];
-      res.status(200).json(users);
+      const thoughts = [];
+      res.status(200).json(thoughts);
     } catch (err) {
       res.status(500).json(err);
     }
@@ -14,9 +14,9 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
   
-      const user = {};
+      const thought = {};
      
-      if (!user) {
+      if (!thought) {
         res.status(404).json({ message: 'No thought found with that id!' });
         return;
       }
