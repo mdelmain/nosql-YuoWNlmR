@@ -1,5 +1,6 @@
 const { Thought } = require('../../models');
 
+
 const router = require('express').Router();
 
 // GET all thoughts

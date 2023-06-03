@@ -1,22 +1,30 @@
 const connection = require("../config/connection");
-const { User, Thought } = require("../models");
+const { User, Thought, Reaction } = require("../models");
 
 connection.on("error", (err) => err);
 
 connection.once("open", async () => {
   console.log("connected");
-
   // Drop existing users
   await User.deleteMany({});
 
-  // Drop existing users
+  // Drop existing thoughts
   await Thought.deleteMany({});
+
+
+  const reactions = [];
+
+  reactions.push({
+    reactionBody: "this is a reaction",
+    username: "bob",
+  });
 
   const thoughts = [];
 
   thoughts.push({
     thoughtText: "this is a test thought",
     username: "bob",
+    reactions: reactions,
   });
 
   // Add thoughts to the collection and await the results
@@ -44,4 +52,5 @@ connection.once("open", async () => {
   console.table(thoughts);
   console.info("Seeding complete! 🌱");
   process.exit(0);
+  
 });
