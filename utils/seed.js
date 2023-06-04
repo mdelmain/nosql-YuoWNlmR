@@ -11,7 +11,6 @@ connection.once("open", async () => {
   // Drop existing thoughts
   await Thought.deleteMany({});
 
-
   const reactions = [];
 
   reactions.push({
@@ -21,36 +20,40 @@ connection.once("open", async () => {
 
   const thoughts = [];
 
-  thoughts.push({
-    thoughtText: "this is a test thought",
-    username: "bob",
-    reactions: reactions,
-  });
+  thoughts.push(
+    {
+      thoughtText: "this is a test thought",
+      username: "bob",
+      reactions: reactions,
+    },
+    {
+      thoughtText: "this is another test thought",
+      username: "antonio",
+      reactions: reactions,
+    }
+  );
 
   // Add thoughts to the collection and await the results
-  const thoughtsResult = await Thought.collection.insertMany(thoughts);
-
-  const thoughtIds = [];
-  for (const index in thoughtsResult.insertedIds) {
-    thoughtIds.push(thoughtsResult.insertedIds[index]);
-  }
-
-  // Create empty array to hold the users
-  const users = [];
-
-  users.push({
-    username: "bob",
-    email: "bob@mail.com",
-    thoughts: thoughtIds,
-  });
+  const bobThoughtResult = await Thought.collection.insertOne(thoughts[0]);
+  const antonioThoughtResult = await Thought.collection.insertOne(thoughts[1]);
 
   // Add users to the collection and await the results
-  await User.collection.insertMany(users);
+  const antonioUserResult = await User.collection.insertOne({
+    username: "antonio",
+    email: "antonio@mail.com",
+    thoughts: [antonioThoughtResult.insertedId],
+    friends: [],
+  });
+
+  await User.collection.insertOne({
+    username: "bob",
+    email: "bob@mail.com",
+    thoughts: [bobThoughtResult.insertedId],
+    friends: [antonioUserResult.insertedId],
+  });
 
   // Log out the seed data to indicate what should appear in the database
-  console.table(users);
   console.table(thoughts);
   console.info("Seeding complete! 🌱");
-  process.exit(0);
-  
+  process.exit(0);ß
 });

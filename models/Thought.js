@@ -3,7 +3,7 @@ const { Schema, Types, model } = require("mongoose");
 const reactionSchema = new Schema({
   reactionId: {
     type: Schema.Types.ObjectId,
-    default: Types.ObjectId
+    default: Types.ObjectId,
   },
   reactionBody: {
     type: String,
@@ -20,6 +20,7 @@ const reactionSchema = new Schema({
     get: formatDate,
   },
 });
+
 const thoughtSchema = new Schema(
   {
     thoughtText: {
@@ -48,11 +49,9 @@ const thoughtSchema = new Schema(
   }
 );
 
-thoughtSchema
-  .virtual('reactionCount')
-  .get(function (){
-    return this.reactions.length;
-  });
+thoughtSchema.virtual("reactionCount").get(function () {
+  return this.reactions.length;
+});
 
 function formatDate(date) {
   if (date) return date.toISOString().split("T")[0];
