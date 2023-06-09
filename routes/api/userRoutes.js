@@ -1,4 +1,4 @@
-const { User } = require("../../models");
+const { User, Thought } = require("../../models");
 
 const router = require("express").Router();
 
@@ -66,11 +66,49 @@ router.delete("/:id", async (req, res) => {
   try {
     const user = await User.findOneAndRemove({ _id: req.params.id });
 
+    // await Thought.deleteMany({ username: user.username });
+    await Thought.deleteMany({ _id: { $in: user.thoughts }});
+
     if (!user) {
-      return res.status(404).json({ message: "No user with this id!" });
+      res.status(404).json({ message: "No user with this id!" });
+      return;
     }
 
-    res.status(200).json();
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+router.post("/:userId/friends/:friendId", async (req, res) => {
+  try {
+    const user = await User.findOneAndUpdate(
+      { _id: req.params.userId },
+      { $addToSet: { friends: req.params.friendId } },
+      { new: true }
+    );
+    if (!user) {
+      res.status(404).json({ message: "No user with this id!" });
+      return;
+    }
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+router.delete("/:userId/friends/:friendId", async (req, res) => {
+  try {
+    const user = await User.findOneAndUpdate(
+      { _id: req.params.userId },
+      { $pull: { friends: req.params.friendId } },
+      { new: true }
+    );
+    if (!user) {
+      res.status(404).json({ message: "No user with this id!" });
+      return;
+    }
+    res.status(200).json(user);
   } catch (err) {
     res.status(500).json(err);
   }
